@@ -28,7 +28,10 @@ export default class ExampleComponent extends React.Component<Props> {
       maxWidth: '100%',
       margin: '2rem auto'
     },
-    inputForm: {
+    inputForm:{
+
+    },
+    formFlexContainer: {
       width: '100%',
       display: 'flex',
     },
@@ -89,7 +92,7 @@ export default class ExampleComponent extends React.Component<Props> {
     event.preventDefault();
 
     this.state.open ?
-      this.setState({ inputValue: this.state.suggestions[this.state.selectedSuggestion] }) :
+      this.setState({ inputValue: this.state.suggestions[this.state.selectedSuggestion], open: false }) :
       console.log(this.state.inputValue);
   }
 
@@ -97,14 +100,14 @@ export default class ExampleComponent extends React.Component<Props> {
     this.openSuggestions();
     this.state.selectedSuggestion === this.state.suggestions.length - 1 ?
       this.setState({ open: false }) :
-      this.setState({ selectedSuggestion: this.state.selectedSuggestion + 1 })
+      this.setState({ selectedSuggestion: this.state.selectedSuggestion + 1 }, () => this.updateScroll())
   }
 
   selectPrevSuggestion = (): void => {
     !this.state.open && this.openSuggestions();
     this.state.selectedSuggestion === 0 ?
       this.setState({ open: false }) :
-      this.setState({ selectedSuggestion: this.state.selectedSuggestion - 1 })
+      this.setState({ selectedSuggestion: this.state.selectedSuggestion - 1 }, () => this.updateScroll())
   }
 
   selectSuggestion = (index: Number, value: String): void => {
@@ -118,53 +121,73 @@ export default class ExampleComponent extends React.Component<Props> {
     this.selectSuggestion(index, value);
   }
 
-  render() {
-    console.log(this.state.selectedSuggestion);
+  updateScroll = () => {
+    if (this.scrollRef.current && this.scrollRef.current.scrollHeight) {
+      const { clientHeight, scrollHeight, scrollTop } = this.scrollRef.current;
+      const itemHeight = scrollHeight / (this.state.suggestions.length + 2);
 
-    /* const {
+      const currentItemPos = itemHeight * this.state.selectedSuggestion;
+
+      if (currentItemPos + 2 * itemHeight > scrollTop + clientHeight || currentItemPos - itemHeight < scrollTop) {
+        this.scrollRef.current.scrollTop = currentItemPos;
+      }
+
+
+    }
+  }
+
+  render() {
+
+    const {
       text
-    } = this.props */
+    } = this.props
     return (
       <div style={this.styles.autoSuggestInput}>
         <form
           onSubmit={this.handleSubmit}
           style={this.styles.inputForm}
         >
+          <label htmlFor="searchInput">
+            {text}
+          </label>
+          <div style={this.styles.formFlexContainer}>
+            <div style={this.styles.inputContainer}>
 
-          <div style={this.styles.inputContainer}>
-            <label htmlFor="searchInput"></label>
-            <input
-              value={this.state.inputValue}
-              onChange={this.onInputChange}
-              onFocus={this.openSuggestions}
-              /* onBlur={this.closeSuggestions} */
-              onKeyDown={this.handleKeyDown}
-              style={this.styles.input}
-              type="text" name="searchInput"
-              id="searchInput"
-              autoComplete="off"
-            />
+              <input
+                value={this.state.inputValue}
+                onChange={this.onInputChange}
+                onFocus={this.openSuggestions}
+                onBlur={this.closeSuggestions}
+                onKeyDown={this.handleKeyDown}
+                style={this.styles.input}
+                type="text" name="searchInput"
+                id="searchInput"
+                autoComplete="off"
+              />
 
-            {this.state.open &&
-              <div ref={this.scrollRef} style={this.styles.autoSuggestContainer}>
+              {this.state.open &&
+                <div ref={this.scrollRef} style={this.styles.autoSuggestContainer}>
 
-                <ul style={this.styles.suggestionsList}>
-                  {this.state.suggestions.map((item, index) =>
-                    <li
-                      onClick={(event) => this.handleSuggestClick(event, index, item)}
-                      onMouseDown={(event)=>event.preventDefault()}
-                      key={`suggestion_${item}_${Math.random()}`}
-                      style={index === this.state.selectedSuggestion ? { backgroundColor: 'lightgrey' } : { backgroundColor: 'white' }}
-                    >
-                      {item}
-                    </li>
-                  )}
-                </ul>
+                  <ul style={this.styles.suggestionsList}>
+                    {this.state.suggestions.map((item, index) =>
+                      <li
+                        onClick={(event) => this.handleSuggestClick(event, index, item)}
+                        onMouseDown={(event) => event.preventDefault()}
+                        key={`suggestion_${item}_${Math.random()}`}
+                        style={index === this.state.selectedSuggestion ? { backgroundColor: 'lightgrey' } : { backgroundColor: 'white' }}
+                      >
+                        {item}
+                      </li>
+                    )}
+                  </ul>
 
-              </div>}
+                </div>}
 
+            </div>
+            <input type="submit" value="SEARCH" />
           </div>
-          <input type="submit" value="SEARCH" />
+
+
         </form>
 
       </div>
