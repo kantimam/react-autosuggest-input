@@ -1,6 +1,7 @@
 .autoSuggestInput {
   box-sizing: border-box;
-  width: 24rem;
+  width: 26rem;
+  height: 2.2rem;
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -11,13 +12,19 @@
     font-size: 1.2rem;
 }
 
+.ASI_Form{
+  height: 100%;
+}
+
 .ASI_FlexContainer {
+  height: 100%;
   width: 100%;
   display: flex;
 }
 
 
 .ASI_InputContainer {
+  height: 100%;
   flex: 1;
   position: relative;
 }
@@ -31,7 +38,7 @@
 
 .ASI_Submit {
   padding: 0 0.4rem;
-
+  height: 100%;
 }
 
 
@@ -47,6 +54,5 @@
 
 .ASI_UL {
   list-style: none;
-  box-sizing: border-box;
   padding: 0 0.2rem;
 }

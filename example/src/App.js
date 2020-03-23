@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 
 import ExampleComponent from 'react-autosuggest-input'
+import LoadingSpinner from './LoadingSpinner'
 
 export default class App extends Component {
   state={
@@ -17,8 +18,8 @@ export default class App extends Component {
 
           loading={true}
           loadingIndicator={
-            <div style={{position: "absolute", top: 0, right: 0,bottom: 0,width: "1.2rem", border: "1px solid red", }}>
-              
+            <div style={{position: "absolute",display: 'flex', top: 0, right: "0.4rem", bottom: 0,width: "2.2rem"/* , border: "1px solid red", borderRadius: "4rem" */}}>
+              <LoadingSpinner/>
             </div>
           }
           suggestions={["asd","dda","camcer","asd","dda","camcer","asd","dda","camcer","asd","dda","camcer","asd","dda","camcer","asd","dda","camcer","asd","dda","camcer","asd","dda","camcer","asd","dda","camcer",]} />
