@@ -3,102 +3,84 @@
  */
 
 import * as React from 'react'
+import './index.css'
 
+export type Props = { 
+  value:string, 
+  label?: string, 
+  className?: string, 
+  suggestions: Array<object | string>, 
+  labelExtractor(item: object | string):string, 
+  onOpen():any, 
+  onClose():any, 
+  onSubmit(inputString: string): void,
+  onChange(inputString: string): void, 
+  loading: boolean,
+  loadingIndicator: React.ReactElement
+}
 
-export type Props = { text: string }
+export type StateTypes={
+  open: boolean,
+  selectedSuggestion: number,
+}
 
 export default class ExampleComponent extends React.Component<Props> {
+  static defaultProps={
+    labelExtractor: (label: string):string=>label,
+    suggestions: [],
+  }
   private scrollRef = React.createRef<HTMLDivElement>();
-  state = {
+  readonly state:StateTypes = {
     open: false,
     selectedSuggestion: 0,
-    suggestions: [
-      "hello",
-      "world",
-      "mr",
-      "kungFlu"
-    ],
-    inputValue: '',
 
   }
-  styles = {
-    autoSuggestInput: {
-      boxSizing: 'border-box' as 'border-box',
-      width: '24rem',
-      maxWidth: '100%',
-      margin: '2rem auto'
-    },
-    inputForm:{
+  
 
-    },
-    formFlexContainer: {
-      width: '100%',
-      display: 'flex',
-    },
-    inputContainer: {
-      flex: '1',
-      position: 'relative' as 'relative'
-    },
-    input: {
-      width: '100%'
-    },
-    autoSuggestContainer: {
-      width: '100%',
-      position: 'absolute' as 'absolute',
-      height: '10rem',
-      overflowY: 'auto' as 'auto',
-      overflowX: 'hidden' as 'hidden',
-      border: '1px solid black'
-    },
-    suggestionsList: {
-      listStyle: 'none',
-      boxSizing: 'border-box' as 'border-box',
-      padding: '0 0.2rem'
-    }
 
-  }
 
-  componentDidMount() {
-    let randomArr = new Array(60).fill(0).map(_ => Math.random());
-    const noDoubles = Array.from(new Set(randomArr));
-    this.setState({ suggestions: noDoubles })
-  }
-
-  onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({ inputValue: event.target.value })
+  onInputChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
+    this.setState({ inputValue: event.target.value })
+    this.props.onChange && this.props.onChange(event.target.value);
+  } 
 
   openSuggestions = (): void => {
-    !this.state.open && this.setState({ open: true, selectedSuggestion: 0 })
+    (!this.state.open && this.props.suggestions.length) && this.setState({ open: true, selectedSuggestion: 0 })
+    this.props.onOpen && this.props.onOpen();
   }
 
   closeSuggestions = (): void => {
     this.state.open && this.setState({ open: false, selectedSuggestion: 0 })
+    this.props.onClose && this.props.onClose();
   }
 
   handleKeyDown = (event: React.KeyboardEvent): void => {
     switch (event.keyCode) {
       case 40:
+        /* DOWN ARROW */
         this.selectNextSuggestion();
         break;
       case 38:
+        /* UP ARROW */
         this.selectPrevSuggestion();
         break;
       case 27:
+        /* close if ESC is pressed */
         this.closeSuggestions();
         break;
     }
   }
 
-  handleSubmit = (event: React.FormEvent) => {
+  handleSubmit = (event: React.FormEvent):void => {
     event.preventDefault();
-
     this.state.open ?
-      this.setState({ inputValue: this.state.suggestions[this.state.selectedSuggestion], open: false }) :
-      console.log(this.state.inputValue);
+      this.setState({open: false }) :
+      this.props.onSubmit && this.props.onSubmit(this.props.value);
   }
 
   selectNextSuggestion = (): void => {
     this.openSuggestions();
-    this.state.selectedSuggestion === this.state.suggestions.length - 1 ?
+    this.state.selectedSuggestion === this.props.suggestions.length - 1 ?
       this.setState({ open: false }) :
       this.setState({ selectedSuggestion: this.state.selectedSuggestion + 1 }, () => this.updateScroll())
   }
@@ -110,24 +92,29 @@ export default class ExampleComponent extends React.Component<Props> {
       this.setState({ selectedSuggestion: this.state.selectedSuggestion - 1 }, () => this.updateScroll())
   }
 
-  selectSuggestion = (index: Number, value: String): void => {
+  selectSuggestion = (index: Number, value: string): void => {
     if (event) event.preventDefault();
-    this.setState({ inputValue: value, selectedSuggestion: index })
+    this.setState({selectedSuggestion: index })
+    this.props.onChange(value);
   }
 
-  handleSuggestClick = (event: React.MouseEvent, index: Number, value: String) => {
+  handleSuggestClick = (event: React.MouseEvent, index: Number, value: string) => {
     event.preventDefault();
     event.stopPropagation();
     this.selectSuggestion(index, value);
   }
 
-  updateScroll = () => {
+  updateScroll = ():void => {
+    /* only do stuff if the container is scrollable */
     if (this.scrollRef.current && this.scrollRef.current.scrollHeight) {
       const { clientHeight, scrollHeight, scrollTop } = this.scrollRef.current;
-      const itemHeight = scrollHeight / (this.state.suggestions.length + 2);
+      /* ul adds 1 item padding at the top and 1 item padding at the bottom so 2 extra fake items */
+      const itemHeight = scrollHeight / (this.props.suggestions.length + 2);
 
+      /* current position of the selected item */
       const currentItemPos = itemHeight * this.state.selectedSuggestion;
 
+      /* adjust scroll if the item overflows the container */
       if (currentItemPos + 2 * itemHeight > scrollTop + clientHeight || currentItemPos - itemHeight < scrollTop) {
         this.scrollRef.current.scrollTop = currentItemPos;
       }
@@ -137,59 +124,61 @@ export default class ExampleComponent extends React.Component<Props> {
   }
 
   render() {
-
-    const {
-      text
-    } = this.props
     return (
-      <div style={this.styles.autoSuggestInput}>
+      <div className={`autoSuggestInput ${this.props.className}`}>
         <form
+          className="ASI_Form"
           onSubmit={this.handleSubmit}
-          style={this.styles.inputForm}
         >
-          <label htmlFor="searchInput">
-            {text}
+          <label htmlFor="searchInput" className="ASI_Label">
+            {this.props.label}
           </label>
-          <div style={this.styles.formFlexContainer}>
-            <div style={this.styles.inputContainer}>
+          <div className="ASI_FlexContainer">
+            <div className="ASI_InputContainer">
 
               <input
-                value={this.state.inputValue}
+                className="ASI_Field"
+                value={this.props.value}
                 onChange={this.onInputChange}
                 onFocus={this.openSuggestions}
                 onBlur={this.closeSuggestions}
                 onKeyDown={this.handleKeyDown}
-                style={this.styles.input}
                 type="text" name="searchInput"
                 id="searchInput"
                 autoComplete="off"
               />
 
-              {this.state.open &&
-                <div ref={this.scrollRef} style={this.styles.autoSuggestContainer}>
+              {this.props.loading && this.props.loadingIndicator && this.props.loadingIndicator}
 
-                  <ul style={this.styles.suggestionsList}>
-                    {this.state.suggestions.map((item, index) =>
-                      <li
-                        onClick={(event) => this.handleSuggestClick(event, index, item)}
-                        onMouseDown={(event) => event.preventDefault()}
-                        key={`suggestion_${item}_${Math.random()}`}
-                        style={index === this.state.selectedSuggestion ? { backgroundColor: 'lightgrey' } : { backgroundColor: 'white' }}
-                      >
-                        {item}
-                      </li>
+              {this.state.open &&
+                <div className="ASI_SuggestionContainer" ref={this.scrollRef}>
+
+                  <ul className="ASI_UL" >
+                    {this.props.suggestions.map((item, index) =>
+                      { /* extract label if the array items are not just strings for exameple (item)=>item.title */
+                        const label=this.props.labelExtractor(item);
+                        return<li 
+                          className="ASI_SuggestionItem"
+                          onClick={(event) => this.handleSuggestClick(event, index, label)}
+                          onMouseDown={(event) => event.preventDefault()}
+                          key={`suggestion_${label}_${Math.random()}`}
+                          style={index === this.state.selectedSuggestion ? { backgroundColor: 'lightgrey' } : { backgroundColor: 'white' }}
+                        >
+                          {item}
+                        </li>
+                      }
                     )}
                   </ul>
 
-                </div>}
+                </div>
+              }
 
             </div>
-            <input type="submit" value="SEARCH" />
+            <input className="ASI_Submit" type="submit" value="SEARCH" />
           </div>
 
 
         </form>
-
       </div>
     )
   }
