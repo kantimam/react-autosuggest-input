@@ -29,6 +29,7 @@ export default class ExampleComponent extends React.Component<Props> {
     labelExtractor: (label: string):string=>label,
     suggestions: [],
   }
+  openWhenLoaded:boolean=false;
   private scrollRef = React.createRef<HTMLDivElement>();
   readonly state:StateTypes = {
     open: false,
@@ -36,7 +37,15 @@ export default class ExampleComponent extends React.Component<Props> {
 
   }
   
-
+  componentDidUpdate(prevProps:any){
+    if(this.props.value!==prevProps.value){
+      this.openWhenLoaded=true;
+    }
+    if(this.openWhenLoaded && !this.props.loading){
+      this.openSuggestions();
+      this.openWhenLoaded=false;
+    }
+  }
 
 
   onInputChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
@@ -156,7 +165,7 @@ export default class ExampleComponent extends React.Component<Props> {
                   <ul className="ASI_UL" >
                     {this.props.suggestions.map((item, index) =>
                       { /* extract label if the array items are not just strings for exameple (item)=>item.title */
-                        const label=this.props.labelExtractor(item);
+                        const label: string=this.props.labelExtractor(item);
                         return<li 
                           className="ASI_SuggestionItem"
                           onClick={(event) => this.handleSuggestClick(event, index, label)}
@@ -164,7 +173,7 @@ export default class ExampleComponent extends React.Component<Props> {
                           key={`suggestion_${label}_${Math.random()}`}
                           style={index === this.state.selectedSuggestion ? { backgroundColor: 'lightgrey' } : { backgroundColor: 'white' }}
                         >
-                          {item}
+                          {label}
                         </li>
                       }
                     )}
