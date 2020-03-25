@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import ExampleComponent from 'react-autosuggest-input'
+import AutoSuggest from 'react-autosuggest-input'
 import LoadingSpinner from './LoadingSpinner'
 
 export default class App extends Component {
@@ -14,17 +14,18 @@ export default class App extends Component {
   fakeApiCall=()=>{
     return new Promise((resolve, reject)=>{
       setTimeout(()=>{
-        Math.random()>0.6? reject() : resolve({results:[
+        Math.random()>0.8? reject() : resolve({results:[
           "succes","suggestions","sucked"
         ]});
       }, 1200)
     })
   }
 
-  apiSearch=(query)=>{
+  apiSearch=()=>{
     this.fakeApiCall()
       .then(json=>this.setState({suggestions: json.results, loading: false}))
-      .catch(e=>this.setState({suggestions: [], loading: false}));  // handle error outside of component if you want or add error prop yourself
+      .catch(e=>this.setState({suggestions: [], loading: false}));  
+      // handle error outside of component if you want or add error prop yourself
   }
 
   onChange=(inputVal)=>{    
@@ -40,7 +41,7 @@ export default class App extends Component {
   render () {
     return (
       <div>
-        <ExampleComponent
+        <AutoSuggest
           value={this.state.value}
           labelExtractor={(item)=>item.title} 
           onSubmit={(val)=>console.log(val)}
