@@ -7,7 +7,7 @@
 ## Install
 
 ```bash
-npm install --save react-autosuggest-input
+npm install --save @kantimam/react-autosuggest-input
 ```
 
 ## Usage
@@ -37,14 +37,13 @@ export default class App extends Component {
   }
 
   apiSearch=(query)=>{
-    this.fakeApiCall().
-      then(json=>this.setState({suggestions: json.results, loading: false})).
-      catch(e=>this.setState({suggestions: [], loading: false}));  // handle error outside of component if you want or add error prop yourself
+    this.fakeApiCall()
+      .then(json=>this.setState({suggestions: json.results, loading: false})).
+      .catch(e=>this.setState({suggestions: [], loading: false}));  
+      // handle error outside of component if you want or add error prop yourself
   }
 
-  onChange=(inputVal)=>{
-    console.log("fired");
-    
+  onChange=(inputVal)=>{    
     this.setState({value: inputVal, loading: true})
     clearTimeout(this.debounceTimeOut);
     this.debounceTimeOut=setTimeout(()=>this.apiSearch(inputVal), 1200);

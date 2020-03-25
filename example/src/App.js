@@ -17,24 +17,17 @@ export default class App extends Component {
         Math.random()>0.6? reject() : resolve({results:[
           "succes","suggestions","sucked"
         ]});
-      }, 3000)
+      }, 1200)
     })
   }
 
   apiSearch=(query)=>{
-    /* maybe do this if you actually have a working api */
-    /* query && fetch(this.SEARCH_URL(query)).
-      then(response=>response.json()).
-      then(json=>this.setState({suggestions: json.results, loading: false})); */
-
-    this.fakeApiCall().
-      then(json=>this.setState({suggestions: json.results, loading: false})).
-      catch(e=>this.setState({suggestions: [], loading: false}));  // handle error outside of component if you want or add error prop yourself
+    this.fakeApiCall()
+      .then(json=>this.setState({suggestions: json.results, loading: false}))
+      .catch(e=>this.setState({suggestions: [], loading: false}));  // handle error outside of component if you want or add error prop yourself
   }
 
-  onChange=(inputVal)=>{
-    console.log("fired");
-    
+  onChange=(inputVal)=>{    
     this.setState({value: inputVal, loading: true})
     clearTimeout(this.debounceTimeOut);
     this.debounceTimeOut=setTimeout(()=>this.apiSearch(inputVal), 1200);
