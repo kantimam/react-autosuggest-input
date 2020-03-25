@@ -67,7 +67,7 @@ export default class App extends Component {
 
           loading={this.state.loading}
           loadingIndicator={
-            <div style={{position: "absolute",display: 'flex', top: 0, right: "0.4rem", bottom: 0,width: "2.2rem"/* , border: "1px solid red", borderRadius: "4rem" */}}>
+            <div style={{position: "absolute",display: 'flex', top: 0, right: "0.4rem", bottom: 0,width: "2.2rem"}}>
               <LoadingSpinner/>
             </div>
           }
