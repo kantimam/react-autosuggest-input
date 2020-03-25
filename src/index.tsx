@@ -14,7 +14,8 @@ export type Props = {
   onOpen():any, 
   onClose():any, 
   onSubmit(inputString: string): void,
-  onChange(inputString: string): void, 
+  onChange(inputString: string): void,
+  onSuggestionSelect?(inputString: string): void,  // using onChange to fire api calls usually but dont want to call api again after picking suggestion
   loading: boolean,
   loadingIndicator: React.ReactElement
 }
@@ -39,9 +40,11 @@ export default class ExampleComponent extends React.Component<Props> {
   
   componentDidUpdate(prevProps:any){
     if(this.props.value!==prevProps.value){
+      /* if inputValue changed toggle openWhenLoaded */
       this.openWhenLoaded=true;
     }
     if(this.openWhenLoaded && !this.props.loading){
+      /* if inputValue changed so the suggestionlist is expected to be different and loaded open suggestions */
       this.openSuggestions();
       this.openWhenLoaded=false;
     }
@@ -104,7 +107,10 @@ export default class ExampleComponent extends React.Component<Props> {
   selectSuggestion = (index: Number, value: string): void => {
     if (event) event.preventDefault();
     this.setState({selectedSuggestion: index })
-    this.props.onChange(value);
+    /* if special onSuggestionSelect function was providid to not colide with onChange use it */
+    this.props.onSuggestionSelect? 
+      this.props.onSuggestionSelect(value) : 
+      this.props.onChange(value);
   }
 
   handleSuggestClick = (event: React.MouseEvent, index: Number, value: string) => {
@@ -130,6 +136,12 @@ export default class ExampleComponent extends React.Component<Props> {
 
 
     }
+  }
+
+  extractLabel=(item: object | string):string=>{
+    if(typeof item==='object') return this.props.labelExtractor(item);
+    else if(typeof item==='string') return item;
+    else return '';
   }
 
   render() {
@@ -159,13 +171,13 @@ export default class ExampleComponent extends React.Component<Props> {
 
               {this.props.loading && this.props.loadingIndicator && this.props.loadingIndicator}
 
-              {this.state.open &&
+              {(this.state.open && this.props.suggestions.length>0) &&
                 <div className="ASI_SuggestionContainer" ref={this.scrollRef}>
 
                   <ul className="ASI_UL" >
                     {this.props.suggestions.map((item, index) =>
                       { /* extract label if the array items are not just strings for exameple (item)=>item.title */
-                        const label: string=this.props.labelExtractor(item);
+                        const label: string=this.extractLabel(item);
                         return<li 
                           className="ASI_SuggestionItem"
                           onClick={(event) => this.handleSuggestClick(event, index, label)}

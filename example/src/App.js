@@ -11,16 +11,37 @@ export default class App extends Component {
     loading: false
   }
 
-  SEARCH_URL=(query)=>`${"https://api.themoviedb.org/3/"}search/movie?api_key=${"f3a05026119d09f84c9aaef927a18ac2"}&query=${query}`
+  fakeApiCall=()=>{
+    return new Promise((resolve, reject)=>{
+      setTimeout(()=>{
+        Math.random()>0.6? reject() : resolve({results:[
+          "succes","suggestions","sucked"
+        ]});
+      }, 3000)
+    })
+  }
 
   apiSearch=(query)=>{
-    query && fetch(this.SEARCH_URL(query)).then(response=>response.json()).then(json=>this.setState({suggestions: json.results, loading: false}));
+    /* maybe do this if you actually have a working api */
+    /* query && fetch(this.SEARCH_URL(query)).
+      then(response=>response.json()).
+      then(json=>this.setState({suggestions: json.results, loading: false})); */
+
+    this.fakeApiCall().
+      then(json=>this.setState({suggestions: json.results, loading: false})).
+      catch(e=>this.setState({suggestions: [], loading: false}));  // handle error outside of component if you want or add error prop yourself
   }
 
   onChange=(inputVal)=>{
+    console.log("fired");
+    
     this.setState({value: inputVal, loading: true})
     clearTimeout(this.debounceTimeOut);
     this.debounceTimeOut=setTimeout(()=>this.apiSearch(inputVal), 1200);
+  }
+
+  onSuggestionSelect=(inputVal)=>{
+    this.setState({value: inputVal, loading: false})
   }
 
   render () {
@@ -31,7 +52,8 @@ export default class App extends Component {
           labelExtractor={(item)=>item.title} 
           onSubmit={(val)=>console.log(val)}
           onChange={this.onChange}
-          
+          onSuggestionSelect={this.onSuggestionSelect}
+
           className="customInput"
 
           loading={this.state.loading}
