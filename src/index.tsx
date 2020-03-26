@@ -27,11 +27,11 @@ export type StateTypes = {
 
 export default class ExampleComponent extends React.Component<Props> {
   static defaultProps = {
-    labelExtractor: (_: object): string =>"labelExtractor required",
+    labelExtractor: (_: object): string => "labelExtractor required",
     suggestions: [],
   }
 
-  
+
 
   private inputValueRestore: string = ""
   private scrollRef = React.createRef<HTMLDivElement>();
@@ -55,7 +55,9 @@ export default class ExampleComponent extends React.Component<Props> {
 
   openSuggestions = (): void => {
     if (!this.state.open && this.props.suggestions.length) {
-      this.setState({ open: true })
+      this.setState({ open: true }, () => {
+        this.updateScroll();
+      })
       this.props.onOpen && this.props.onOpen();
     }
   }
@@ -115,7 +117,7 @@ export default class ExampleComponent extends React.Component<Props> {
   }
 
   selectNextSuggestion = (): void => {
-    if(!this.state.open) return this.openSuggestions();
+    if (!this.state.open) return this.openSuggestions();
     this.state.selectedSuggestion === this.props.suggestions.length - 1 ?
       this.setState({ open: false }) :
       (
@@ -128,7 +130,7 @@ export default class ExampleComponent extends React.Component<Props> {
   }
 
   selectPrevSuggestion = (): void => {
-    if(!this.state.open) return this.openSuggestions();
+    if (!this.state.open) return this.openSuggestions();
     this.openSuggestions();
     this.state.selectedSuggestion === 0 ?
       this.setState({ open: false }) :
@@ -164,8 +166,7 @@ export default class ExampleComponent extends React.Component<Props> {
     /* only do stuff if the container is scrollable */
     if (this.scrollRef.current && this.scrollRef.current.scrollHeight) {
       const { clientHeight, scrollHeight, scrollTop } = this.scrollRef.current;
-      /* ul adds 1 item padding at the top and 1 item padding at the bottom so 2 extra fake items */
-      const itemHeight = scrollHeight / (this.props.suggestions.length + 2);
+      const itemHeight = scrollHeight / (this.props.suggestions.length);
 
       /* current position of the selected item */
       const currentItemPos = itemHeight * this.state.selectedSuggestion;
@@ -181,7 +182,8 @@ export default class ExampleComponent extends React.Component<Props> {
 
   extractLabel = (item: object | string): string => {
     if (typeof item === 'string') return item;
-    return this.props.labelExtractor(item);
+    else if (typeof item === 'object') return this.props.labelExtractor(item) || "undefined";
+    else return "invalid type";
   }
 
   render() {
@@ -216,7 +218,8 @@ export default class ExampleComponent extends React.Component<Props> {
                 <div className="ASI_SuggestionContainer" ref={this.scrollRef}>
 
                   <ul className="ASI_UL" >
-                    {this.props.suggestions.map((item, index) => { /* extract label if the array items are not just strings for exameple (item)=>item.title */
+                    {this.props.suggestions.map((item, index) => {
+                      /* extract label if the array items are not just strings for exameple (item)=>item.title */
                       const label: string = this.extractLabel(item);
                       return <li
                         className={`ASI_SuggestionItem ${index === this.state.selectedSuggestion ? 'ASI_Active' : ''}`}
