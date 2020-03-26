@@ -1,5 +1,5 @@
 /**
- * @class ExampleComponent
+ * @class AutoSuggestInput
  */
 
 import * as React from 'react'
@@ -27,9 +27,12 @@ export type StateTypes = {
 
 export default class ExampleComponent extends React.Component<Props> {
   static defaultProps = {
-    labelExtractor: (label: string): string => label,
+    labelExtractor: (_: object): string =>"labelExtractor required",
     suggestions: [],
   }
+
+  
+
   private inputValueRestore: string = ""
   private scrollRef = React.createRef<HTMLDivElement>();
   readonly state: StateTypes = {
@@ -139,7 +142,7 @@ export default class ExampleComponent extends React.Component<Props> {
   }
 
 
-  selectSuggestion = (index: Number, value: string): void => {
+  selectSuggestion = (index: number, value: string): void => {
     if (event) event.preventDefault();
     this.setState({ selectedSuggestion: index })
     /* store prev value for the case that user pushes esc for restore */
@@ -150,7 +153,7 @@ export default class ExampleComponent extends React.Component<Props> {
       this.props.onChange(value);
   }
 
-  handleSuggestClick = (event: React.MouseEvent, index: Number, value: string) => {
+  handleSuggestClick = (event: React.MouseEvent, index: number, value: string) => {
     event.preventDefault();
     event.stopPropagation();
     this.selectSuggestion(index, value);
@@ -177,9 +180,8 @@ export default class ExampleComponent extends React.Component<Props> {
   }
 
   extractLabel = (item: object | string): string => {
-    if (typeof item === 'object') return this.props.labelExtractor(item);
-    else if (typeof item === 'string') return item;
-    else return '';
+    if (typeof item === 'string') return item;
+    return this.props.labelExtractor(item);
   }
 
   render() {

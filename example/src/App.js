@@ -15,7 +15,7 @@ export default class App extends Component {
     return new Promise((resolve, reject)=>{
       setTimeout(()=>{
         Math.random()>0.8? reject() : resolve({results:[
-          "succes","suggestions","sucked"
+          {title:"succes"},{title:"suggestions"},{title:"sucked"}
         ]});
       }, 1200)
     })
