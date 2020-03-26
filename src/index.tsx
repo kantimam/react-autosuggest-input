@@ -11,8 +11,8 @@ export type Props = {
   className?: string,
   suggestions: Array<object | string>,
   labelExtractor(item: object | string): string,
-  onOpen()?: any,
-  onClose(): any,
+  onOpen?(): any,
+  onClose?(): any,
   onSubmit(inputString: string): void,
   onChange(inputString: string): void,
   onSuggestionSelect?(inputString: string): void,  // using onChange to fire api calls usually but dont want to call api again after picking suggestion

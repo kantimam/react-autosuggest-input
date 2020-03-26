@@ -1,10 +1,11 @@
 {
   "name": "@kantimam/react-autosuggest",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "input field with autosuggest list",
   "author": "https://github.com/kantimam",
   "license": "MIT",
   "repository": "https://github.com/kantimam/react-autosuggest-input",
+  "homepage": "http://kantimam.github.io/react-autosuggest-input/",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",

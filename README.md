@@ -7,7 +7,7 @@
 ## Install
 
 ```bash
-npm install --save @kantimam/react-autosuggest-input
+npm install --save @kantimam/react-autosuggest
 ```
 
 ## Usage
