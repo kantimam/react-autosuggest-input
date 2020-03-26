@@ -95,7 +95,7 @@ export default class App extends Component {
 | loading            | Boolean      |          | Should loading indicator be displayed also is used to open suggestions after loading prop changes                                 |
 | loadingIndicator   | ReactElement |          | ReactElement that will be rendered if loading is true                                                                             |
 | onOpen             | Function     |          | Function that will be fired when suggestion list opens                                                                            |
-| [onClose           | Function     |          | Function that will be fired when suggestion list closes                                                                           |
+| onClose           | Function     |          | Function that will be fired when suggestion list closes                                                                           |
 
 ## License
 
