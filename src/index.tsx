@@ -11,7 +11,7 @@ export type Props = {
   className?: string,
   suggestions: Array<object | string>,
   labelExtractor(item: object | string): string,
-  onOpen(): any,
+  onOpen()?: any,
   onClose(): any,
   onSubmit(inputString: string): void,
   onChange(inputString: string): void,
