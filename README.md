@@ -83,19 +83,19 @@ export default class App extends Component {
 
 ## Props
 
-| Prop                   | Type         | Required | Description                                                                                                                       |
-|:-----------------------|:-------------|:--------:|:----------------------------------------------------------------------------------------------------------------------------------|
-| [`suggestions`]        | Array        |    ✓     | These are the suggestions that will be displayed.                                                                                 |
-| [`value`]              | String       |    ✓     | Value of the input field                                                                                                          |
-| [`onChange`]           | Function     |    ✓     | Required to change the input value by typing or selecting a suggestion                                                            |
-| [`onSubmit`]           | Function     |    ✓     | Required to submit the value. could be handled outside of component but submit on enter key needs to be intercepted in some cases |
-| [`label`]              | String       |          | Can be used to give your input a label                                                                                            |
-| [`className`]          | String       |          | Can be used to add your own className to parent component                                                                         |
-| [`onSuggestionSelect`] | Function     |          | If provided this will be called when a suggestion is clicked instead of onChange                                                  |
-| [`loading`]            | Boolean      |          | Should loading indicator be displayed also is used to open suggestions after loading prop changes                                 |
-| [`loadingIndicator`]   | ReactElement |          | ReactElement that will be rendered if loading is true                                                                             |
-| [`onOpen`]             | Function     |          | Function that will be fired when suggestion list opens                                                                            |
-| [`onClose`]            | Function     |          | Function that will be fired when suggestion list closes                                                                           |
+| Prop               | Type         | Required | Description                                                                                                                       |
+|:-------------------|:-------------|:--------:|:----------------------------------------------------------------------------------------------------------------------------------|
+| suggestions        | Array        |    ✓     | These are the suggestions that will be displayed.                                                                                 |
+| value              | String       |    ✓     | Value of the input field                                                                                                          |
+| onChange           | Function     |    ✓     | Required to change the input value by typing or selecting a suggestion                                                            |
+| onSubmit           | Function     |    ✓     | Required to submit the value. could be handled outside of component but submit on enter key needs to be intercepted in some cases |
+| label              | String       |          | Can be used to give your input a label                                                                                            |
+| className          | String       |          | Can be used to add your own className to parent component                                                                         |
+| onSuggestionSelect | Function     |          | If provided this will be called when a suggestion is clicked instead of onChange                                                  |
+| loading            | Boolean      |          | Should loading indicator be displayed also is used to open suggestions after loading prop changes                                 |
+| loadingIndicator   | ReactElement |          | ReactElement that will be rendered if loading is true                                                                             |
+| onOpen             | Function     |          | Function that will be fired when suggestion list opens                                                                            |
+| [onClose           | Function     |          | Function that will be fired when suggestion list closes                                                                           |
 
 ## License
 
