@@ -31,7 +31,7 @@ export default class App extends Component {
     this.fakeApiCall()
       .then(json=>this.setState({suggestions: json.results, loading: false}))
       .catch(e=>this.setState({suggestions: [], loading: false}));  
-      // handle error outside of component if you want or add error prop yourself
+      //handle error outside of component if you want or add error prop yourself
   }
 
   onChange=(inputVal)=>{    
@@ -62,13 +62,10 @@ export default class App extends Component {
           className="customInput"
 
           loading={this.state.loading}
-          loadingIndicator={
-            <div style={{position: "absolute",display: 'flex', top: 0, right: "0.4rem", bottom: 0,width: "2.2rem"}}>
-              <LoadingSpinner/>
-            </div>
-          }
+          loadingIndicator={<LoadingSpinner/>}
         />
       </div>
     )
   }
 }
+

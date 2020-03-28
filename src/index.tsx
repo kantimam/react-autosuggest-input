@@ -118,20 +118,20 @@ export default class ExampleComponent extends React.Component<Props> {
 
   selectNextSuggestion = (): void => {
     if (!this.state.open) return this.openSuggestions();
-    
-      const nextSuggestion = (this.state.selectedSuggestion+1) % this.props.suggestions.length;
-      
-      this.selectSuggestion(this.state.selectedSuggestion,this.selectedSuggestionLabel(nextSuggestion))
-      this.setState({ selectedSuggestion: nextSuggestion }, () => this.updateScroll())
+
+    const nextSuggestion = (this.state.selectedSuggestion + 1) % this.props.suggestions.length;
+
+    this.selectSuggestion(this.state.selectedSuggestion, this.selectedSuggestionLabel(nextSuggestion))
+    this.setState({ selectedSuggestion: nextSuggestion }, () => this.updateScroll())
   }
 
   selectPrevSuggestion = (): void => {
     if (!this.state.open) return this.openSuggestions();
-    
-    const prevSuggestion = this.state.selectedSuggestion <= 0 ? 
-      this.props.suggestions.length - 1 : 
+
+    const prevSuggestion = this.state.selectedSuggestion <= 0 ?
+      this.props.suggestions.length - 1 :
       this.state.selectedSuggestion - 1;
-    
+
     this.selectSuggestion(this.state.selectedSuggestion, this.selectedSuggestionLabel(prevSuggestion))
     this.setState({ selectedSuggestion: prevSuggestion }, () => this.updateScroll())
 
@@ -206,7 +206,11 @@ export default class ExampleComponent extends React.Component<Props> {
                 autoComplete="off"
               />
 
-              {this.props.loading && this.props.loadingIndicator && this.props.loadingIndicator}
+              {(this.props.loading && this.props.loadingIndicator) &&
+                <SquareLoadingWrapper>
+                  {this.props.loadingIndicator}
+                </SquareLoadingWrapper>
+              }
 
               {(this.state.open && this.props.suggestions.length > 0) &&
                 <div className="ASI_SuggestionContainer" ref={this.scrollRef}>
@@ -242,3 +246,41 @@ export default class ExampleComponent extends React.Component<Props> {
 }
 
 
+export type LoadingProps={
+  children: React.ReactElement | undefined
+}
+
+export type LoadingState={
+  size: number
+}
+
+export class SquareLoadingWrapper extends React.Component<LoadingProps, LoadingState> {
+  readonly state:LoadingState={
+    size: 0
+  }
+  onRef=(element: HTMLDivElement):void=>{
+    if(element){
+      const height:number=element.clientHeight;
+      this.setState({size: height})
+    }
+  }
+  render() {
+    return (
+      <div
+        ref={this.onRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          right: 0,
+          width: `${this.state.size}px`,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        {this.props.children}
+      </div>
+    )
+  }
+}
