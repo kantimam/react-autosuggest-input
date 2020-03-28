@@ -118,29 +118,23 @@ export default class ExampleComponent extends React.Component<Props> {
 
   selectNextSuggestion = (): void => {
     if (!this.state.open) return this.openSuggestions();
-    this.state.selectedSuggestion === this.props.suggestions.length - 1 ?
-      this.setState({ open: false }) :
-      (
-        this.selectSuggestion(
-          this.state.selectedSuggestion,
-          this.selectedSuggestionLabel(this.state.selectedSuggestion + 1)
-        )
-        , this.setState({ selectedSuggestion: this.state.selectedSuggestion + 1 }, () => this.updateScroll())
-      )
+    
+      const nextSuggestion = (this.state.selectedSuggestion+1) % this.props.suggestions.length;
+      
+      this.selectSuggestion(this.state.selectedSuggestion,this.selectedSuggestionLabel(nextSuggestion))
+      this.setState({ selectedSuggestion: nextSuggestion }, () => this.updateScroll())
   }
 
   selectPrevSuggestion = (): void => {
     if (!this.state.open) return this.openSuggestions();
-    this.openSuggestions();
-    this.state.selectedSuggestion === 0 ?
-      this.setState({ open: false }) :
-      (
-        this.selectSuggestion(
-          this.state.selectedSuggestion,
-          this.selectedSuggestionLabel(this.state.selectedSuggestion - 1)
-        ),
-        this.setState({ selectedSuggestion: this.state.selectedSuggestion - 1 }, () => this.updateScroll())
-      )
+    
+    const prevSuggestion = this.state.selectedSuggestion <= 0 ? 
+      this.props.suggestions.length - 1 : 
+      this.state.selectedSuggestion - 1;
+    
+    this.selectSuggestion(this.state.selectedSuggestion, this.selectedSuggestionLabel(prevSuggestion))
+    this.setState({ selectedSuggestion: prevSuggestion }, () => this.updateScroll())
+
   }
 
 
