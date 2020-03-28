@@ -16,22 +16,12 @@ export default class App extends Component {
       setTimeout(()=>{
         Math.random()>0.8? reject() : resolve({results:[
           {title:"succes"},{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
-          ,{title:"suggestions"},{title:"sucked"}
+          ,{title:"let"},{title:"us"},{title:"stop"},{title:"using"}
+          ,{title:"only"},{title:"words"},{title:"that"},{title:"start"}
+          ,{title:"with"},{title:"SSSSSS"},{title:"potato me"},{title:"should"}
+          ,{title:"really"},{title:"find"},{title:"a"},{title:"hobby"}
+          ,{title:"before"},{title:"the"},{title:"isolation"},{title:"drives"}
+          ,{title:"me"},{title:"insane"}
         ]});
       }, 1200)
     })
@@ -58,12 +48,17 @@ export default class App extends Component {
     return (
       <div>
         <AutoSuggest
+          /* required */
+          suggestions={this.state.suggestions}
+
           value={this.state.value}
-          labelExtractor={(item)=>item.title} 
-          onSubmit={(val)=>console.log(val)}
           onChange={this.onChange}
+          onSubmit={(val)=>console.log(val)}
+          /* optional  */
           onSuggestionSelect={this.onSuggestionSelect}
 
+          labelExtractor={(item)=>item.title} //required if the suggestions are objects
+          
           className="customInput"
 
           loading={this.state.loading}
@@ -72,7 +67,7 @@ export default class App extends Component {
               <LoadingSpinner/>
             </div>
           }
-          suggestions={this.state.suggestions} />
+        />
       </div>
     )
   }
