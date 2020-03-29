@@ -5,6 +5,7 @@
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
 }
 
 .autoSuggestInput *{
@@ -12,28 +13,38 @@
     font-size: 1.2rem;
 }
 
-.ASI_Form{
-  height: 100%;
+.ASI_AbsoluteContainer{
+  position: absolute;
+  width: 100%;
+  min-height: 100%;
+  border: 1px solid black;
+  border-radius: 0.4rem;
+  overflow: hidden;
 }
 
+
 .ASI_FlexContainer {
-  height: 100%;
+  height: 2.2rem;  /* actual hight of the inputs */
   width: 100%;
   display: flex;
+  position: relative;
 }
 
 
 .ASI_InputContainer {
   height: 100%;
-  flex: 1;
   position: relative;
+  flex: 1;
 }
 
 
+
 .ASI_Field {
-  padding: 0 0 0 0.4rem;
-  width: 100%;
   height: 100%;
+  padding: 0 2.2rem 0 0.4rem;
+  width: 100%;
+  flex: 1;
+  
 }
 
 .ASI_Submit {
@@ -43,13 +54,12 @@
 
 
 .ASI_SuggestionContainer {
-  position: absolute;
+  z-index: 4;
   top: 100%;
   width: 100%;
   max-height: 10rem;
   overflow-y: auto;
   overflow-x: hidden;
-  border: 1px solid black;
 }
 
 .ASI_UL {
@@ -61,11 +71,11 @@
 .ASI_UL>li{
   padding-left: 0.2rem;
   cursor:  default;
+  text-overflow: ellipsis;
 }
 
 .ASI_Active{
   background-color: rgba(200,200,200,1);
-
 }
 
 .ASI_UL>li:hover{

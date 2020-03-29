@@ -28,6 +28,7 @@ export default class App extends Component {
   }
 
   apiSearch=()=>{
+    this.setState({loading: true})
     this.fakeApiCall()
       .then(json=>this.setState({suggestions: json.results, loading: false}))
       .catch(e=>this.setState({suggestions: [], loading: false}));  
@@ -35,13 +36,13 @@ export default class App extends Component {
   }
 
   onChange=(inputVal)=>{    
-    this.setState({value: inputVal, loading: true})
     clearTimeout(this.debounceTimeOut);
     this.debounceTimeOut=setTimeout(()=>this.apiSearch(inputVal), 1200);
   }
 
   onSuggestionSelect=(inputVal)=>{
-    this.setState({value: inputVal, loading: false})
+    /* maybe do a real api call here */
+    this.apiSearch(inputVal)
   }
 
   render () {
@@ -52,9 +53,10 @@ export default class App extends Component {
           suggestions={this.state.suggestions}
 
           value={this.state.value}
-          onChange={this.onChange}
+          setValue={(value)=>this.setState({value: value})}
           onSubmit={(val)=>console.log(val)}
           /* optional  */
+          onChange={this.onChange}
           onSuggestionSelect={this.onSuggestionSelect}
 
           labelExtractor={(item)=>item.title} //required if the suggestions are objects
@@ -63,6 +65,7 @@ export default class App extends Component {
 
           loading={this.state.loading}
           loadingIndicator={<LoadingSpinner/>}
+          deleteIcon={<div>X</div>}
         />
       </div>
     )

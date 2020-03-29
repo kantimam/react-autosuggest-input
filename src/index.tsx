@@ -13,11 +13,16 @@ export type Props = {
   labelExtractor(item: object | string): string,
   onOpen?(): any,
   onClose?(): any,
-  onSubmit(inputString: string): void,
-  onChange(inputString: string): void,
-  onSuggestionSelect?(inputString: string): void,  // using onChange to fire api calls usually but dont want to call api again after picking suggestion
-  loading: boolean,
-  loadingIndicator: React.ReactElement
+  setValue(InputString: string): void,
+  onSubmit(inputString: string): any,
+  onChange?(): any,
+  onSuggestionSelect?(inputString: string): any,  // using onChange to fire api calls usually but dont want to call api again after picking suggestion
+  onRestore?(inputString: string): any,
+  onReset?():any,
+  loading?: boolean,
+  loadingIndicator?: React.ReactElement
+  deleteIcon?: React.ReactElement
+  forceClosed?: boolean
 }
 
 export type StateTypes = {
@@ -25,7 +30,7 @@ export type StateTypes = {
   selectedSuggestion: number,
 }
 
-export default class ExampleComponent extends React.Component<Props> {
+export default class AutoSuggestInput extends React.Component<Props> {
   static defaultProps = {
     labelExtractor: (_: object): string => "labelExtractor required",
     suggestions: [],
@@ -35,6 +40,7 @@ export default class ExampleComponent extends React.Component<Props> {
 
   private inputValueRestore: string = ""
   private scrollRef = React.createRef<HTMLDivElement>();
+  private inputRef = React.createRef<HTMLInputElement>();
   readonly state: StateTypes = {
     open: false,
     selectedSuggestion: 0,
@@ -43,26 +49,28 @@ export default class ExampleComponent extends React.Component<Props> {
 
   componentDidUpdate(prevProps: any) {
     /* if it was loading before and no longer is chances are there are new suggestions to see :) */
-    if (!this.props.loading && prevProps.loading) {
+    if (!this.props.loading && this.props.suggestions !== prevProps.suggestions) {
       this.openSuggestions();
     }
   }
 
 
   onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.props.onChange && this.props.onChange(event.target.value);
+    this.props.setValue(event.target.value);
+    this.props.onChange && this.props.onChange();
   }
 
-  openSuggestions = (): void => {
-    if (!this.state.open && this.props.suggestions.length) {
+  openSuggestions = (): void => {        
+    if (!this.props.forceClosed && !this.state.open && this.props.suggestions.length) {
       this.setState({ open: true }, () => {
+        this.inputRef.current!.focus()
         this.updateScroll();
       })
       this.props.onOpen && this.props.onOpen();
     }
   }
 
-  closeSuggestions = (): void => {
+  closeSuggestions = (): void => {    
     if (this.state.open) {
       this.setState({ open: false })
       this.inputValueRestore = "";
@@ -70,7 +78,7 @@ export default class ExampleComponent extends React.Component<Props> {
     }
   }
 
-  handleKeyDown = (event: React.KeyboardEvent): void => {
+  handleKeyDown = (event: React.KeyboardEvent): void => { 
     switch (event.keyCode) {
       case 40:
         /* DOWN ARROW */
@@ -93,6 +101,7 @@ export default class ExampleComponent extends React.Component<Props> {
         if (!this.state.open) return;
         /* if enter is pressed and suggestions are open dont submit yet */
         event.preventDefault();
+        this.props.onSuggestionSelect && this.props.onSuggestionSelect(this.props.value);
         this.closeSuggestions();
         break;
 
@@ -111,14 +120,24 @@ export default class ExampleComponent extends React.Component<Props> {
   restorePrev = () => {
     /* if there is a restore value you can go back to your initial input */
     if (!this.inputValueRestore) return
-    this.props.onSuggestionSelect ?
-      this.props.onSuggestionSelect(this.inputValueRestore) :
-      this.props.onChange(this.inputValueRestore);
+    this.setInputValue(this.inputValueRestore)
+    this.props.onRestore && this.props.onRestore(this.inputValueRestore);
+  }
+
+  setInputValue = (value: string): void => {
+    /* used when the value was forcefully filled not by just typing */
+    this.props.setValue(value)
+  }
+
+  resetInputValue=():void=>{
+    this.setInputValue("");
+    this.props.onReset && this.props.onReset();
+    this.closeSuggestions();
   }
 
   selectNextSuggestion = (): void => {
     if (!this.state.open) return this.openSuggestions();
-
+    
     const nextSuggestion = (this.state.selectedSuggestion + 1) % this.props.suggestions.length;
 
     this.selectSuggestion(this.state.selectedSuggestion, this.selectedSuggestionLabel(nextSuggestion))
@@ -143,16 +162,15 @@ export default class ExampleComponent extends React.Component<Props> {
     this.setState({ selectedSuggestion: index })
     /* store prev value for the case that user pushes esc for restore */
     if (this.inputValueRestore === "") this.inputValueRestore = this.props.value;
-    /* if special onSuggestionSelect function was providid to not colide with onChange use it */
-    this.props.onSuggestionSelect ?
-      this.props.onSuggestionSelect(value) :
-      this.props.onChange(value);
+
+    this.setInputValue(value)
   }
 
   handleSuggestClick = (event: React.MouseEvent, index: number, value: string) => {
     event.preventDefault();
     event.stopPropagation();
     this.selectSuggestion(index, value);
+    this.props.onSuggestionSelect && this.props.onSuggestionSelect(value);
     this.closeSuggestions();
   }
 
@@ -182,18 +200,21 @@ export default class ExampleComponent extends React.Component<Props> {
 
   render() {
     return (
-      <div className={`autoSuggestInput ${this.props.className}`}>
-        <form
-          className="ASI_Form"
-          onSubmit={this.handleSubmit}
-        >
-          <label htmlFor="searchInput" className="ASI_Label">
-            {this.props.label}
-          </label>
+      <form
+        className={`autoSuggestInput ${this.props.className ? this.props.className : ''}`}
+        onSubmit={this.handleSubmit}
+      >
+        <div className="ASI_AbsoluteContainer">
+          {this.props.label ?
+            <label htmlFor="searchInput" className="ASI_Label">
+              {this.props.label}
+            </label> :
+            null
+          }
           <div className="ASI_FlexContainer">
             <div className="ASI_InputContainer">
-
               <input
+                ref={this.inputRef}
                 className="ASI_Field"
                 value={this.props.value}
                 onChange={this.onInputChange}
@@ -206,68 +227,76 @@ export default class ExampleComponent extends React.Component<Props> {
                 autoComplete="off"
               />
 
-              {(this.props.loading && this.props.loadingIndicator) &&
-                <SquareLoadingWrapper>
+              {(this.props.loading && this.props.loadingIndicator) ?
+                <SquareWrapper>
                   {this.props.loadingIndicator}
-                </SquareLoadingWrapper>
-              }
+                </SquareWrapper> :
 
-              {(this.state.open && this.props.suggestions.length > 0) &&
-                <div className="ASI_SuggestionContainer" ref={this.scrollRef}>
-
-                  <ul className="ASI_UL" >
-                    {this.props.suggestions.map((item, index) => {
-                      /* extract label if the array items are not just strings for exameple (item)=>item.title */
-                      const label: string = this.extractLabel(item);
-                      return <li
-                        className={`ASI_SuggestionItem ${index === this.state.selectedSuggestion ? 'ASI_Active' : ''}`}
-                        onClick={(event) => this.handleSuggestClick(event, index, label)}
-                        onMouseDown={(event) => event.preventDefault()}
-                        key={`suggestion_${label}_${Math.random()}`}
-                      >
-                        {label}
-                      </li>
-                    }
-                    )}
-                  </ul>
-
-                </div>
+                (this.props.value && this.props.deleteIcon) &&
+                <SquareWrapper onClick={this.resetInputValue}>
+                  {this.props.deleteIcon}
+                </SquareWrapper>
               }
 
             </div>
             <input className="ASI_Submit" type="submit" value="SEARCH" />
           </div>
+          {(this.state.open && this.props.suggestions.length > 0) &&
+            <div className="ASI_SuggestionContainer" ref={this.scrollRef}>
 
+              <ul className="ASI_UL" >
+                {this.props.suggestions.map((item, index) => {
+                  /* extract label if the array items are not just strings for exameple (item)=>item.title */
+                  const label: string = this.extractLabel(item);
+                  return <li
+                    className={`ASI_SuggestionItem ${index === this.state.selectedSuggestion ? 'ASI_Active' : ''}`}
+                    onClick={(event) => this.handleSuggestClick(event, index, label)}
+                    onMouseDown={(event) => event.preventDefault()}
+                    key={`suggestion_${label}_${Math.random()}`}
+                  >
+                    {label}
+                  </li>
+                }
+                )}
+              </ul>
 
-        </form>
-      </div>
+            </div>
+          }
+        </div>
+      </form>
     )
   }
 }
 
 
-export type LoadingProps={
+export type WrapperProps = {
   children: React.ReactElement | undefined
+  onClick?(): void
 }
 
-export type LoadingState={
+export type LoadingState = {
   size: number
 }
 
-export class SquareLoadingWrapper extends React.Component<LoadingProps, LoadingState> {
-  readonly state:LoadingState={
+export class SquareWrapper extends React.Component<WrapperProps, LoadingState> {
+  readonly state: LoadingState = {
     size: 0
   }
-  onRef=(element: HTMLDivElement):void=>{
-    if(element){
-      const height:number=element.clientHeight;
-      this.setState({size: height})
+  onRef = (element: HTMLDivElement): void => {
+    if (element) {
+      const height: number = element.clientHeight;
+      this.setState({ size: height })
     }
   }
+  onClick = (): void => {
+    this.props.onClick && this.props.onClick();
+  }
+
   render() {
     return (
       <div
         ref={this.onRef}
+        onClick={this.onClick}
         style={{
           position: 'absolute',
           top: 0,
@@ -276,7 +305,8 @@ export class SquareLoadingWrapper extends React.Component<LoadingProps, LoadingS
           width: `${this.state.size}px`,
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          cursor: 'default'
         }}
       >
         {this.props.children}
