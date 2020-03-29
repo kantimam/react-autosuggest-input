@@ -1,7 +1,7 @@
 .autoSuggestInput {
   box-sizing: border-box;
   width: 26rem;
-  height: 2.2rem;
+  min-height: 2.2rem;
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -54,6 +54,7 @@
 
 
 .ASI_SuggestionContainer {
+  background-color: white;
   z-index: 4;
   top: 100%;
   width: 100%;

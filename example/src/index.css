@@ -8,6 +8,17 @@ body {
   /* width: 20rem !important; */
 }
 
+.inputContainer{
+  height: 40rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.inputContainer h3{
+  text-align: center;
+}
+
 .sk-cube-grid {
   width: 90%;
   height: 90%;

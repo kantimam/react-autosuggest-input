@@ -10,7 +10,7 @@
 npm install --save @kantimam/react-autosuggest
 ```
 
-## Usage
+## Usage with suggestions from API
 
 ```tsx
 import React, { Component } from 'react'
@@ -50,7 +50,7 @@ export default class App extends Component {
       //handle error outside of component if you want or add error prop yourself
   }
 
-  onChange=(inputVal)=>{    
+  onChange=(inputVal)=>{        
     clearTimeout(this.debounceTimeOut);
     this.debounceTimeOut=setTimeout(()=>this.apiSearch(inputVal), 1200);
   }
@@ -63,6 +63,7 @@ export default class App extends Component {
   render () {
     return (
       <div>
+        <h3>EXAMPLE WITH API CALLS</h3>
         <AutoSuggest
           /* required */
           suggestions={this.state.suggestions}
@@ -73,10 +74,13 @@ export default class App extends Component {
           /* optional  */
           onChange={this.onChange}
           onSuggestionSelect={this.onSuggestionSelect}
-
-          labelExtractor={(item)=>item.title} //required if the suggestions are objects
+          /* labelExtractor required if the suggestions are objects 
+          should return the value of an object property as string
+          mostly titles or names */
+          labelExtractor={(item)=>item.title} 
           
           className="customInput"
+          placeholder="search api"
 
           loading={this.state.loading}
           loadingIndicator={<LoadingSpinner/>}
@@ -86,6 +90,77 @@ export default class App extends Component {
     )
   }
 }
+
+
+
+```
+
+## Usage with local suggestions
+
+```tsx
+import React, { Component } from 'react'
+
+import AutoSuggest from 'react-autosuggest-input'
+import LoadingSpinner from './LoadingSpinner'
+
+export default class App extends Component {
+  debounceTimeOut=null;
+  state={
+    value: "",
+    suggestions: [
+      {title:"succes"},{title:"suggestions"},{title:"sucked"}
+      ,{title:"let"},{title:"us"},{title:"stop"},{title:"using"}
+      ,{title:"only"},{title:"words"},{title:"that"},{title:"start"}
+      ,{title:"with"},{title:"SSSSSS"},{title:"potato me"},{title:"should"}
+      ,{title:"really"},{title:"find"},{title:"a"},{title:"hobby"}
+      ,{title:"before"},{title:"the"},{title:"isolation"},{title:"drives"}
+      ,{title:"me"},{title:"insane"}
+    ],
+  }
+
+
+  filterSuggestions=(suggestionArr)=>{
+    /* filter out suggestions that dont have value as part of their string */
+    return suggestionArr.filter(suggestion=>this.labelExtractor(suggestion)
+      .toLowerCase()
+      .indexOf(this.state.value.toLowerCase())>-1
+    )
+  }
+
+  labelExtractor=(suggestionObject)=>suggestionObject.title;
+  
+  render () {
+    return (
+      <div>
+        <h3>EXAMPLE WITH LOCAL SUGGESTIONS</h3>
+
+        <AutoSuggest
+          /* required */
+          /* filter out suggestions on the client side */
+          suggestions={this.filterSuggestions(this.state.suggestions)}
+
+          value={this.state.value}
+          setValue={(value)=>this.setState({value: value})}
+          onSubmit={(val)=>console.log(val)}
+          
+          /* optional  */
+          onChange={this.onChange}
+          /* labelExtractor required if the suggestions are objects 
+          should return the value of an object property as string
+          mostly titles or names */
+          labelExtractor={this.labelExtractor} 
+          
+          className="customInput"
+          placeholder="enter word"
+
+          deleteIcon={<div>X</div>}
+        />
+      </div>
+    )
+  }
+}
+
+
 
 ```
 

@@ -35,7 +35,7 @@ export default class App extends Component {
       //handle error outside of component if you want or add error prop yourself
   }
 
-  onChange=(inputVal)=>{    
+  onChange=(inputVal)=>{        
     clearTimeout(this.debounceTimeOut);
     this.debounceTimeOut=setTimeout(()=>this.apiSearch(inputVal), 1200);
   }
@@ -48,6 +48,7 @@ export default class App extends Component {
   render () {
     return (
       <div>
+        <h3>EXAMPLE WITH API CALLS</h3>
         <AutoSuggest
           /* required */
           suggestions={this.state.suggestions}
@@ -58,10 +59,13 @@ export default class App extends Component {
           /* optional  */
           onChange={this.onChange}
           onSuggestionSelect={this.onSuggestionSelect}
-
-          labelExtractor={(item)=>item.title} //required if the suggestions are objects
+          /* labelExtractor required if the suggestions are objects 
+          should return the value of an object property as string
+          mostly titles or names */
+          labelExtractor={(item)=>item.title} 
           
           className="customInput"
+          placeholder="search api"
 
           loading={this.state.loading}
           loadingIndicator={<LoadingSpinner/>}

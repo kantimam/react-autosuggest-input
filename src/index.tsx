@@ -15,14 +15,15 @@ export type Props = {
   onClose?(): any,
   setValue(InputString: string): void,
   onSubmit(inputString: string): any,
-  onChange?(): any,
+  onChange?(inputString: string): any,
   onSuggestionSelect?(inputString: string): any,  // using onChange to fire api calls usually but dont want to call api again after picking suggestion
   onRestore?(inputString: string): any,
-  onReset?():any,
+  onReset?(): any,
   loading?: boolean,
-  loadingIndicator?: React.ReactElement
-  deleteIcon?: React.ReactElement
-  forceClosed?: boolean
+  loadingIndicator?: React.ReactElement,
+  deleteIcon?: React.ReactElement,
+  forceClosed?: boolean,
+  placeholder: string
 }
 
 export type StateTypes = {
@@ -34,9 +35,8 @@ export default class AutoSuggestInput extends React.Component<Props> {
   static defaultProps = {
     labelExtractor: (_: object): string => "labelExtractor required",
     suggestions: [],
+    placeholder: ""
   }
-
-
 
   private inputValueRestore: string = ""
   private scrollRef = React.createRef<HTMLDivElement>();
@@ -57,10 +57,10 @@ export default class AutoSuggestInput extends React.Component<Props> {
 
   onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.props.setValue(event.target.value);
-    this.props.onChange && this.props.onChange();
+    this.props.onChange && this.props.onChange(event.target.value);
   }
 
-  openSuggestions = (): void => {        
+  openSuggestions = (): void => {
     if (!this.props.forceClosed && !this.state.open && this.props.suggestions.length) {
       this.setState({ open: true }, () => {
         this.inputRef.current!.focus()
@@ -70,7 +70,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
     }
   }
 
-  closeSuggestions = (): void => {    
+  closeSuggestions = (): void => {
     if (this.state.open) {
       this.setState({ open: false })
       this.inputValueRestore = "";
@@ -78,7 +78,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
     }
   }
 
-  handleKeyDown = (event: React.KeyboardEvent): void => { 
+  handleKeyDown = (event: React.KeyboardEvent): void => {
     switch (event.keyCode) {
       case 40:
         /* DOWN ARROW */
@@ -129,7 +129,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
     this.props.setValue(value)
   }
 
-  resetInputValue=():void=>{
+  resetInputValue = (): void => {
     this.setInputValue("");
     this.props.onReset && this.props.onReset();
     this.closeSuggestions();
@@ -137,7 +137,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
 
   selectNextSuggestion = (): void => {
     if (!this.state.open) return this.openSuggestions();
-    
+
     const nextSuggestion = (this.state.selectedSuggestion + 1) % this.props.suggestions.length;
 
     this.selectSuggestion(this.state.selectedSuggestion, this.selectedSuggestionLabel(nextSuggestion))
@@ -204,15 +204,17 @@ export default class AutoSuggestInput extends React.Component<Props> {
         className={`autoSuggestInput ${this.props.className ? this.props.className : ''}`}
         onSubmit={this.handleSubmit}
       >
+        {this.props.label ?
+          <label htmlFor="searchInput" className="ASI_Label">
+            {this.props.label}
+          </label> :
+          null
+        }
         <div className="ASI_AbsoluteContainer">
-          {this.props.label ?
-            <label htmlFor="searchInput" className="ASI_Label">
-              {this.props.label}
-            </label> :
-            null
-          }
+
           <div className="ASI_FlexContainer">
             <div className="ASI_InputContainer">
+
               <input
                 ref={this.inputRef}
                 className="ASI_Field"
@@ -225,6 +227,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
                 type="text" name="searchInput"
                 id="searchInput"
                 autoComplete="off"
+                placeholder={this.props.placeholder}
               />
 
               {(this.props.loading && this.props.loadingIndicator) ?
