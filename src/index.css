@@ -20,6 +20,8 @@
   border: 1px solid black;
   border-radius: 0.4rem;
   overflow: hidden;
+  z-index: 4;
+
 }
 
 
