@@ -27,6 +27,7 @@ export type Props = {
 }
 
 export type StateTypes = {
+  tempValue: string,
   open: boolean,
   selectedSuggestion: number,
 }
@@ -38,10 +39,10 @@ export default class AutoSuggestInput extends React.Component<Props> {
     placeholder: ""
   }
 
-  private inputValueRestore: string = ""
   private scrollRef = React.createRef<HTMLDivElement>();
   private inputRef = React.createRef<HTMLInputElement>();
   readonly state: StateTypes = {
+    tempValue: "",
     open: false,
     selectedSuggestion: 0,
 
@@ -56,6 +57,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
 
 
   onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({tempValue: ""});
     this.props.setValue(event.target.value);
     this.props.onChange && this.props.onChange(event.target.value);
   }
@@ -72,8 +74,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
 
   closeSuggestions = (): void => {
     if (this.state.open) {
-      this.setState({ open: false })
-      this.inputValueRestore = "";
+      this.setState({ open: false, tempValue: "" })
       this.props.onClose && this.props.onClose();
     }
   }
@@ -101,6 +102,10 @@ export default class AutoSuggestInput extends React.Component<Props> {
         if (!this.state.open) return;
         /* if enter is pressed and suggestions are open dont submit yet */
         event.preventDefault();
+        /* key down and up only hovers the selected and stores it in tempValue. By hitting
+        enter the tempValue will finally be set the value */
+        this.props.setValue(this.state.tempValue);
+        this.setState({tempValue: ""})
         this.props.onSuggestionSelect && this.props.onSuggestionSelect(this.props.value);
         this.closeSuggestions();
         break;
@@ -119,9 +124,9 @@ export default class AutoSuggestInput extends React.Component<Props> {
 
   restorePrev = () => {
     /* if there is a restore value you can go back to your initial input */
-    if (!this.inputValueRestore) return
-    this.setInputValue(this.inputValueRestore)
-    this.props.onRestore && this.props.onRestore(this.inputValueRestore);
+    if (!this.state.tempValue) return
+    this.setState({tempValue: ""});
+    this.props.onRestore && this.props.onRestore(this.props.value);
   }
 
   setInputValue = (value: string): void => {
@@ -130,6 +135,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
   }
 
   resetInputValue = (): void => {
+    this.setState({tempValue: ""});
     this.setInputValue("");
     this.props.onReset && this.props.onReset();
     this.closeSuggestions();
@@ -140,8 +146,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
 
     const nextSuggestion = (this.state.selectedSuggestion + 1) % this.props.suggestions.length;
 
-    this.selectSuggestion(this.state.selectedSuggestion, this.selectedSuggestionLabel(nextSuggestion))
-    this.setState({ selectedSuggestion: nextSuggestion }, () => this.updateScroll())
+    this.setState({ selectedSuggestion: nextSuggestion, tempValue: this.selectedSuggestionLabel(nextSuggestion)}, () => this.updateScroll())
   }
 
   selectPrevSuggestion = (): void => {
@@ -151,8 +156,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
       this.props.suggestions.length - 1 :
       this.state.selectedSuggestion - 1;
 
-    this.selectSuggestion(this.state.selectedSuggestion, this.selectedSuggestionLabel(prevSuggestion))
-    this.setState({ selectedSuggestion: prevSuggestion }, () => this.updateScroll())
+    this.setState({ selectedSuggestion: prevSuggestion, tempValue: this.selectedSuggestionLabel(prevSuggestion)}, () => this.updateScroll())
 
   }
 
@@ -161,8 +165,6 @@ export default class AutoSuggestInput extends React.Component<Props> {
     if (event) event.preventDefault();
     this.setState({ selectedSuggestion: index })
     /* store prev value for the case that user pushes esc for restore */
-    if (this.inputValueRestore === "") this.inputValueRestore = this.props.value;
-
     this.setInputValue(value)
   }
 
@@ -187,7 +189,6 @@ export default class AutoSuggestInput extends React.Component<Props> {
       if (currentItemPos + 2 * itemHeight > scrollTop + clientHeight || currentItemPos - itemHeight < scrollTop) {
         this.scrollRef.current.scrollTop = currentItemPos;
       }
-
 
     }
   }
@@ -218,7 +219,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
               <input
                 ref={this.inputRef}
                 className="ASI_Field"
-                value={this.props.value}
+                value={this.state.tempValue || this.props.value}
                 onChange={this.onInputChange}
                 onFocus={this.openSuggestions}
                 onBlur={this.closeSuggestions}
