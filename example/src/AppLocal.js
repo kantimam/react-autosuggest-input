@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 
 import AutoSuggest from 'react-autosuggest-input'
-import LoadingSpinner from './LoadingSpinner'
 
 export default class App extends Component {
   debounceTimeOut=null;
