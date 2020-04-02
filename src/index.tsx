@@ -44,20 +44,21 @@ export default class AutoSuggestInput extends React.Component<Props> {
   readonly state: StateTypes = {
     tempValue: "",
     open: false,
-    selectedSuggestion: 0,
+    selectedSuggestion: -1,
 
   }
 
   componentDidUpdate(prevProps: any) {
     /* if it was loading before and no longer is chances are there are new suggestions to see :) */
     if (!this.props.loading && this.props.suggestions !== prevProps.suggestions) {
+      this.setState({ selectedSuggestion: -1 })
       this.openSuggestions();
     }
   }
 
 
   onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({tempValue: ""});
+    this.setState({ tempValue: "", selectedSuggestion: -1 });
     this.props.setValue(event.target.value);
     this.props.onChange && this.props.onChange(event.target.value);
   }
@@ -74,7 +75,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
 
   closeSuggestions = (): void => {
     if (this.state.open) {
-      this.setState({ open: false, tempValue: "" })
+      this.setState({ open: false, tempValue: "", selectedSuggestion: -1 })
       this.props.onClose && this.props.onClose();
     }
   }
@@ -99,13 +100,13 @@ export default class AutoSuggestInput extends React.Component<Props> {
         this.closeSuggestions();
         break;
       case 13:
-        if (!this.state.open) return;
+        if (!this.state.open || !this.state.tempValue) return;
         /* if enter is pressed and suggestions are open dont submit yet */
         event.preventDefault();
         /* key down and up only hovers the selected and stores it in tempValue. By hitting
         enter the tempValue will finally be set the value */
         this.props.setValue(this.state.tempValue);
-        this.setState({tempValue: ""})
+        this.setState({ tempValue: "" });
         this.props.onSuggestionSelect && this.props.onSuggestionSelect(this.props.value);
         this.closeSuggestions();
         break;
@@ -120,12 +121,11 @@ export default class AutoSuggestInput extends React.Component<Props> {
     this.props.onSubmit(this.props.value);
   }
 
-  selectedSuggestionLabel = (id: number) => this.extractLabel(this.props.suggestions[id])
 
   restorePrev = () => {
     /* if there is a restore value you can go back to your initial input */
     if (!this.state.tempValue) return
-    this.setState({tempValue: ""});
+    this.setState({ tempValue: "" });
     this.props.onRestore && this.props.onRestore(this.props.value);
   }
 
@@ -135,7 +135,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
   }
 
   resetInputValue = (): void => {
-    this.setState({tempValue: ""});
+    this.setState({ tempValue: "" });
     this.setInputValue("");
     this.props.onReset && this.props.onReset();
     this.closeSuggestions();
@@ -146,7 +146,8 @@ export default class AutoSuggestInput extends React.Component<Props> {
 
     const nextSuggestion = (this.state.selectedSuggestion + 1) % this.props.suggestions.length;
 
-    this.setState({ selectedSuggestion: nextSuggestion, tempValue: this.selectedSuggestionLabel(nextSuggestion)}, () => this.updateScroll())
+    const suggestionData = this.props.suggestions[nextSuggestion];
+    if (suggestionData) this.setState({ selectedSuggestion: nextSuggestion, tempValue: this.extractLabel(suggestionData) }, () => this.updateScroll())
   }
 
   selectPrevSuggestion = (): void => {
@@ -156,7 +157,8 @@ export default class AutoSuggestInput extends React.Component<Props> {
       this.props.suggestions.length - 1 :
       this.state.selectedSuggestion - 1;
 
-    this.setState({ selectedSuggestion: prevSuggestion, tempValue: this.selectedSuggestionLabel(prevSuggestion)}, () => this.updateScroll())
+    const suggestionData = this.props.suggestions[prevSuggestion];
+    if (suggestionData) this.setState({ selectedSuggestion: prevSuggestion, tempValue: this.extractLabel(suggestionData) }, () => this.updateScroll())
 
   }
 
