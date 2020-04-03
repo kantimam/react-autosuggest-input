@@ -214,7 +214,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
           null
         }
 
-        <div className="ASI_FlexContainer  ASI_Border">
+        <div className="ASI_FlexContainer ASI_Border">
           <div className="ASI_InputContainer">
 
             <input

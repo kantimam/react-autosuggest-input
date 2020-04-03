@@ -31,8 +31,7 @@
 .ASI_Open .ASI_FlexContainer{
   border-bottom-right-radius: unset;
   border-bottom-left-radius: unset;
-  border-bottom-width: 0;
-  border-bottom-style: unset;
+  border-bottom-color: white;
 }
 
 
@@ -58,6 +57,7 @@
 }
 
 .ASI_SuggestionContainer{
+  z-index: 4;
   background-color: white;
   position: absolute;
   top: 100%;
@@ -84,6 +84,7 @@
 }
 
 .ASI_UL {
+  z-index: 4;
   display: block;
   margin: 0;
   list-style: none;
