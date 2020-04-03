@@ -214,7 +214,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
           null
         }
 
-        <div className="ASI_FlexContainer">
+        <div className="ASI_FlexContainer  ASI_Border">
           <div className="ASI_InputContainer">
 
             <input
@@ -247,7 +247,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
           <input className="ASI_Submit" type="submit" value="SEARCH" />
         </div>
         {(this.state.open && this.props.suggestions.length > 0) &&
-          <div className="ASI_SuggestionContainer">
+          <div className="ASI_SuggestionContainer ASI_Border">
             <div className="ASI_SuggestionInner" ref={this.scrollRef}>
 
               <ul className="ASI_UL" >
