@@ -204,7 +204,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
   render() {
     return (
       <form
-        className={`autoSuggestInput ${this.props.className ? this.props.className : ''}`}
+        className={`autoSuggestInput ${this.state.open ? 'ASI_Open' : ''} ${this.props.className ? this.props.className : ''}`}
         onSubmit={this.handleSubmit}
       >
         {this.props.label ?
@@ -213,42 +213,42 @@ export default class AutoSuggestInput extends React.Component<Props> {
           </label> :
           null
         }
-        <div className="ASI_AbsoluteContainer">
 
-          <div className="ASI_FlexContainer">
-            <div className="ASI_InputContainer">
+        <div className="ASI_FlexContainer">
+          <div className="ASI_InputContainer">
 
-              <input
-                ref={this.inputRef}
-                className="ASI_Field"
-                value={this.state.tempValue || this.props.value}
-                onChange={this.onInputChange}
-                onFocus={this.openSuggestions}
-                onBlur={this.closeSuggestions}
-                onKeyDown={this.handleKeyDown}
-                onClick={this.openSuggestions}
-                type="text" name="searchInput"
-                id="searchInput"
-                autoComplete="off"
-                placeholder={this.props.placeholder}
-              />
+            <input
+              ref={this.inputRef}
+              className="ASI_Field"
+              value={this.state.tempValue || this.props.value}
+              onChange={this.onInputChange}
+              onFocus={this.openSuggestions}
+              onBlur={this.closeSuggestions}
+              onKeyDown={this.handleKeyDown}
+              onClick={this.openSuggestions}
+              type="text" name="searchInput"
+              id="searchInput"
+              autoComplete="off"
+              placeholder={this.props.placeholder}
+            />
 
-              {(this.props.loading && this.props.loadingIndicator) ?
-                <SquareWrapper>
-                  {this.props.loadingIndicator}
-                </SquareWrapper> :
+            {(this.props.loading && this.props.loadingIndicator) ?
+              <SquareWrapper>
+                {this.props.loadingIndicator}
+              </SquareWrapper> :
 
-                (this.props.value && this.props.deleteIcon) &&
-                <SquareWrapper onClick={this.resetInputValue}>
-                  {this.props.deleteIcon}
-                </SquareWrapper>
-              }
+              (this.props.value && this.props.deleteIcon) &&
+              <SquareWrapper onClick={this.resetInputValue}>
+                {this.props.deleteIcon}
+              </SquareWrapper>
+            }
 
-            </div>
-            <input className="ASI_Submit" type="submit" value="SEARCH" />
           </div>
-          {(this.state.open && this.props.suggestions.length > 0) &&
-            <div className="ASI_SuggestionContainer" ref={this.scrollRef}>
+          <input className="ASI_Submit" type="submit" value="SEARCH" />
+        </div>
+        {(this.state.open && this.props.suggestions.length > 0) &&
+          <div className="ASI_SuggestionContainer">
+            <div className="ASI_SuggestionInner" ref={this.scrollRef}>
 
               <ul className="ASI_UL" >
                 {this.props.suggestions.map((item, index) => {
@@ -267,8 +267,8 @@ export default class AutoSuggestInput extends React.Component<Props> {
               </ul>
 
             </div>
-          }
-        </div>
+          </div>
+        }
       </form>
     )
   }

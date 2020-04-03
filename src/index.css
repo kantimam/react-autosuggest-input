@@ -1,7 +1,7 @@
 .autoSuggestInput {
   box-sizing: border-box;
   width: 26rem;
-  min-height: 2.2rem;
+  height: 2rem;
   max-width: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -13,23 +13,22 @@
     font-size: 1.2rem;
 }
 
-.ASI_AbsoluteContainer{
-  position: absolute;
-  width: 100%;
-  min-height: 100%;
-  border: 1px solid black;
-  border-radius: 0.4rem;
-  overflow: hidden;
-  z-index: 4;
-
-}
 
 
 .ASI_FlexContainer {
-  height: 2.2rem;  /* actual hight of the inputs */
+  height: 100%;
   width: 100%;
   display: flex;
-  position: relative;
+  overflow: hidden;
+
+  border-radius: 0.4rem;
+  border: 1px solid black;
+}
+
+.ASI_Open>.ASI_FlexContainer{
+  border-bottom-right-radius: unset;
+  border-bottom-left-radius: unset;
+  border-bottom: unset;
 }
 
 
@@ -54,18 +53,33 @@
   height: 100%;
 }
 
-
-.ASI_SuggestionContainer {
+.ASI_SuggestionContainer{
   background-color: white;
-  z-index: 4;
+  position: absolute;
   top: 100%;
+  left: 0;
+  width: 100%;
+  display: block;
+  overflow: hidden;
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom-left-radius: 0.4rem;
+  border-bottom-right-radius: 0.4rem;
+}
+
+.ASI_SuggestionInner {
+  display: block;
+  z-index: 4;
   width: 100%;
   max-height: 10rem;
   overflow-y: auto;
   overflow-x: hidden;
+
 }
 
 .ASI_UL {
+  display: block;
   margin: 0;
   list-style: none;
   padding: 0;
