@@ -7,7 +7,7 @@ export default class App extends Component {
   state={
     value: "",
     suggestions: [
-      {title:"succes"},{title:"suggestions"},{title:"sucked"}
+      {title:"succes"},{title:"suggestions"},{title:"sucked"},{title:"a very very long title is here lets see how this works"}
       ,{title:"let"},{title:"us"},{title:"stop"},{title:"using"}
       ,{title:"only"},{title:"words"},{title:"that"},{title:"start"}
       ,{title:"with"},{title:"SSSSSS"},{title:"potato me"},{title:"should"}
@@ -53,6 +53,7 @@ export default class App extends Component {
           placeholder="enter word"
 
           deleteIcon={<div>X</div>}
+          submitLabel="SEARCH"
         />
       </div>
     )

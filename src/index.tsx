@@ -8,6 +8,7 @@ import './index.css'
 export type Props = {
   value: string,
   label?: string,
+  submitLabel?: string,
   className?: string,
   suggestions: Array<object | string>,
   labelExtractor(item: object | string): string,
@@ -36,7 +37,8 @@ export default class AutoSuggestInput extends React.Component<Props> {
   static defaultProps = {
     labelExtractor: (_: object): string => "labelExtractor required",
     suggestions: [],
-    placeholder: ""
+    placeholder: "",
+    submitLabel: ""
   }
 
   private scrollRef = React.createRef<HTMLDivElement>();
@@ -215,37 +217,36 @@ export default class AutoSuggestInput extends React.Component<Props> {
         }
 
         <div className="ASI_FlexContainer ASI_Border">
-          <div className="ASI_InputContainer">
 
-            <input
-              ref={this.inputRef}
-              className="ASI_Field"
-              value={this.state.tempValue || this.props.value}
-              onChange={this.onInputChange}
-              onFocus={this.openSuggestions}
-              onBlur={this.closeSuggestions}
-              onKeyDown={this.handleKeyDown}
-              onClick={this.openSuggestions}
-              type="text" name="searchInput"
-              id="searchInput"
-              autoComplete="off"
-              placeholder={this.props.placeholder}
-            />
+          <input
+            ref={this.inputRef}
+            className="ASI_Field"
+            value={this.state.tempValue || this.props.value}
+            onChange={this.onInputChange}
+            onFocus={this.openSuggestions}
+            onBlur={this.closeSuggestions}
+            onKeyDown={this.handleKeyDown}
+            onClick={this.openSuggestions}
+            type="text" name="searchInput"
+            id="searchInput"
+            autoComplete="off"
+            placeholder={this.props.placeholder}
+          />
 
-            {(this.props.loading && this.props.loadingIndicator) ?
-              <SquareWrapper>
-                {this.props.loadingIndicator}
-              </SquareWrapper> :
+          {(this.props.loading && this.props.loadingIndicator) ?
+            <SquareWrapper>
+              {this.props.loadingIndicator}
+            </SquareWrapper> :
 
-              (this.props.value && this.props.deleteIcon) &&
-              <SquareWrapper onClick={this.resetInputValue}>
-                {this.props.deleteIcon}
-              </SquareWrapper>
-            }
+            (this.props.value && this.props.deleteIcon) &&
+            <SquareWrapper onClick={this.resetInputValue}>
+              {this.props.deleteIcon}
+            </SquareWrapper>
+          }
 
-          </div>
-          <input className="ASI_Submit" type="submit" value="SEARCH" />
+          <input className="ASI_Submit" type="submit" value={this.props.submitLabel} />
         </div>
+
         {(this.state.open && this.props.suggestions.length > 0) &&
           <div className="ASI_SuggestionContainer ASI_Border">
             <div className="ASI_SuggestionInner" ref={this.scrollRef}>
@@ -269,6 +270,7 @@ export default class AutoSuggestInput extends React.Component<Props> {
             </div>
           </div>
         }
+
       </form>
     )
   }
@@ -304,10 +306,11 @@ export class SquareWrapper extends React.Component<WrapperProps, LoadingState> {
         ref={this.onRef}
         onClick={this.onClick}
         style={{
-          position: 'absolute',
+          /* position: 'absolute',
           top: 0,
           bottom: 0,
-          right: 0,
+          right: 0, */
+          height: '100%',
           width: `${this.state.size}px`,
           display: 'flex',
           justifyContent: 'center',
